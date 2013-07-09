@@ -1,0 +1,44 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		/* Add CSS here. See the GWT docs on UI Binder for more details */
+		.important {
+			font-weight: bold;
+		}
+		
+	</ui:style>
+	<g:HTMLPanel>
+		<g:Label text="Type a text and click on canvas to add text into canvas" width="450px"/>
+		<g:HorizontalPanel>
+			<g:RichTextArea width="143px" height="39px" ui:field="richTextArea"/>
+		</g:HorizontalPanel>
+		<g:MenuBar width="449px" styleName="menuBar">
+			<g:MenuItem text="File">
+				<g:MenuBar vertical="true">
+					<g:MenuItem text="New"/>
+					<g:MenuItem text="Open"/>
+					<g:MenuItem text="Save"/>
+				</g:MenuBar>
+			</g:MenuItem>
+			<g:MenuItem text="Option">
+				<g:MenuBar vertical="true"/>
+			</g:MenuItem>
+		</g:MenuBar>
+		<g:HorizontalPanel>
+			<g:VerticalPanel>
+				<g:Button width="70px" height="70px" ui:field="pencil" styleName="pencilButton" text="pencil">Pencil</g:Button>
+				<g:Button width="70px" height="70px" ui:field="erase" text="Erase">Erase</g:Button>
+			<g:Button width="70px" height="70px" ui:field="line" text="">Draw Line</g:Button>
+		</g:VerticalPanel>
+			<g:VerticalPanel>
+				<g:Button width="70px" height="70px" ui:field="save">save</g:Button>
+				<g:Button width="70px" height="70px" text="Text" ui:field="addtext">Tẽ</g:Button>
+				<g:Button width="70px" height="70px" text=""></g:Button>
+			</g:VerticalPanel>
+			<g:AbsolutePanel width="800px" height="400px" ui:field="absolutePanel" styleName="absolutePanel">
+			</g:AbsolutePanel>
+		</g:HorizontalPanel>
+		<g:Label text="bla" ui:field="statusLabel"/>
+	</g:HTMLPanel>
+</ui:UiBinder> 

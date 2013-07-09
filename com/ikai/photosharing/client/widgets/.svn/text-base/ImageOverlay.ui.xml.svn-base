@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:VerticalPanel>
+        <g:Image ui:field="image" width="600px" height="600px" />
+        <g:Label ui:field="timestamp" />
+        <g:HorizontalPanel horizontalAlignment="ALIGN_CENTER">
+        	<g:Button styleName="{style.important}" ui:field="deleteButton" />
+        	<g:Button styleName="{style.important}" ui:field="editButton" />
+        </g:HorizontalPanel>	
+        <g:VerticalPanel ui:field="tagPanel" horizontalAlignment="ALIGN_CENTER">
+        </g:VerticalPanel>
+	</g:VerticalPanel>
+</ui:UiBinder> 

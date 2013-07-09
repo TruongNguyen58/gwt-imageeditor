@@ -1,0 +1,207 @@
+package com.ikai.photosharing.client.widgets;
+
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.CssColor;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Touch;
+import com.google.gwt.uibinder.client.*;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.*;
+import com.ikai.photosharing.client.Main;
+import com.ikai.photosharing.client.services.*;
+import com.google.gwt.event.dom.client.*;
+
+public class PaintPanel extends Composite {
+
+	private static PaintPanelUiBinder uiBinder = GWT
+			.create(PaintPanelUiBinder.class);
+
+	interface PaintPanelUiBinder extends UiBinder<Widget, PaintPanel> {
+	}
+
+	Main parent;
+	public @UiField
+	Label statusLabel;
+	public @UiField
+	AbsolutePanel absolutePanel;
+	@UiField
+	RichTextArea richTextArea;
+	@UiField
+	Button pencil;
+	@UiField
+	Button erase;
+	@UiField
+	Button save;
+	@UiField
+	Button line;
+	@UiField
+	Button addtext;
+	UserImageServiceAsync userImageService = GWT.create(UserImageService.class);
+	static final int refreshRate = 100;
+	int x1, y1, x2, y2;
+	static final int height = 400;
+	static final int width = 1190;
+	Image img;
+
+	final CssColor redrawColor = CssColor.make("rgba(255,255,255,0.6)");
+	public Canvas canvas, backBuffer;
+	public Context2d context, backBufferContext;
+	public boolean isDrawing = false;
+	boolean addText = false;
+	boolean isPencil = false;
+	int startX = 150;
+	int startY = 100;
+
+	public PaintPanel(Main parent) {
+		this.parent = parent;
+		initWidget(uiBinder.createAndBindUi(this));
+		createCanvas();
+		absolutePanel.add(canvas);
+		richTextArea();
+		loadImg("images/image.jpg");
+		initHandlers();
+		final Timer timer = new Timer() {
+			@Override
+			public void run() {
+				
+			}
+		};
+		timer.scheduleRepeating(refreshRate);
+
+	}
+
+	static final String holderId = "canvasholder";
+
+	public void createCanvas() {
+		canvas = Canvas.createIfSupported();
+		canvas.setWidth(width + "px");
+		canvas.setHeight(height + "px");
+		canvas.setCoordinateSpaceWidth(width);
+		canvas.setCoordinateSpaceHeight(height);
+		context = canvas.getContext2d();
+	}
+
+	public void initHandlers() {
+			if (isPencil == true) {
+				
+			}
+		
+		if (addText == true) {
+			
+		}
+	}
+
+	public void loadImg(String s) {
+		img = new Image(s);
+		img.setVisible(false);
+		RootPanel.get().add(img);
+
+		img.addLoadHandler(new LoadHandler() {
+			public void onLoad(LoadEvent event) {
+				ImageElement face = ImageElement.as(img.getElement());
+				RootPanel.get().remove(img);
+				context.drawImage(face, 0, 0, 700, 350);
+			}
+		});
+	}
+
+	public void richTextArea() {
+	}
+
+	@UiHandler("richTextArea")
+	void onRichTextAreaKeyPress(KeyPressEvent event) {
+		canvas.addMouseDownHandler(new MouseDownHandler() {
+			public void onMouseDown(MouseDownEvent event) {
+				context.fillText(richTextArea.getText(), event.getX(),event.getY());
+			}
+		});
+	}
+
+	@UiHandler("pencil")
+	public void onPencilClick(ClickEvent event) {
+		canvas.addMouseDownHandler(new MouseDownHandler() {
+			public void onMouseDown(MouseDownEvent event) {
+				isDrawing = true;
+				statusLabel.setText("MouseDownEvent: " + x1 + " : "+ y1);
+				x1 = event.getX();
+				y1 = event.getY();
+				context.moveTo(x1, y1);
+				context.beginPath();
+			}
+		});
+		
+		canvas.addMouseMoveHandler(new MouseMoveHandler() {
+			public void onMouseMove(final MouseMoveEvent event1) {
+				statusLabel.setText("MouseMoveEvent: " + x2 + " : "+ y2);
+				if(isDrawing ==true){
+					x2 = event1.getX();
+					y2 = event1.getY();
+					context.lineTo(x2, y2);
+					context.stroke();
+				}
+			}
+		});
+		canvas.addMouseUpHandler(new MouseUpHandler() {
+			public void onMouseUp(MouseUpEvent event2) {
+				statusLabel.setText("MouseUpEvent: " + x2 + " : " + y2);
+				isDrawing = false;
+			}
+		});
+		canvas.addTouchStartHandler(new TouchStartHandler() {
+			public void onTouchStart(TouchStartEvent event) {
+				statusLabel.setText("TouchTouchEvent: " + x1 + " : "+ y1);
+				Touch touch = event.getTouches().get(0);
+				x1 = Math.abs(startX - touch.getClientX());
+				y1 = Math.abs(startY - touch.getClientY());
+				context.moveTo(x1, y1);
+				context.beginPath();
+			}
+		});
+		canvas.addTouchMoveHandler(new TouchMoveHandler() {
+			public void onTouchMove(final TouchMoveEvent event1) {
+				statusLabel.setText("TouchMoveEvent: " + x2 + " : "+ y2);
+				if(isDrawing ==true){
+					Touch touch = event1.getTouches().get(0);
+					x2 = Math.abs(startX - touch.getClientX());
+					y2 = Math.abs(startY - touch.getClientY());
+					context.lineTo(x2, y2);
+					context.stroke();
+				}
+			}
+		});
+		canvas.addTouchEndHandler(new TouchEndHandler() {
+			public void onTouchEnd(TouchEndEvent event2) {
+				statusLabel.setText("TouchEndEvent: " + x2 + " : " + y2);
+				isDrawing = false;
+			}
+		});
+	}
+
+	@UiHandler("save")
+	public void onSaveClick(ClickEvent event) {
+		statusLabel.setText("Saving...");
+		String imagelocation = canvas.toDataUrl("image/png");
+
+		Image image = new Image(imagelocation);
+		// Image image = new
+		// Image("http://lh5.ggpht.com/fmaN6j537acOjnGkNdawlQyg5Mk51Sp5sSkQlmWSu5v-azXgndAMOBNqOV_OaJpSop0AZtrmmG_FPCoWlLta=s200");
+		RootPanel.get("image").add(image);
+	}
+
+	@UiHandler("erase")
+	void onEraseClick(ClickEvent event) {
+		context.clearRect(0, 0, width, height);
+	}
+
+	@UiHandler("addtext")
+	void onButtonClick(ClickEvent event) {
+		canvas.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+
+			}
+		});
+	}
+
+}
